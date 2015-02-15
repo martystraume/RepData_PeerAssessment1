@@ -1,9 +1,4 @@
----
-title: "Reproducible Research: Peer Assessment 1"
-output: 
-  html_document:
-    keep_md: true
----
+# Reproducible Research: Peer Assessment 1
 
 Marty Straume  
 Course 5  
@@ -14,7 +9,8 @@ Coursera
 
 ##### 1. Read data into data frame
 
-```{r}
+
+```r
 zipFile <- "./activity.zip"
 data <- read.csv(unz(zipFile, "activity.csv"))
 ```
@@ -25,7 +21,8 @@ Note that data\$interval is an "unusual" integer implementation of military time
 
 The addition of "0.5" prior to converting to integer "minutes" is to overcome issues due to roundoff and truncation errors associated with floating point calculations (because "as.integer" employs truncation, not rounding up/down)
 
-```{r}
+
+```r
 time <- data$interval
 hours <- as.integer(time/100)
 minutes <- as.integer((((time/100) - hours) * 100) + 0.5)
@@ -43,38 +40,53 @@ For this part of the assignment, you can ignore the missing values in the datase
 
 ##### 1. Calculate the total number of steps taken per day
 
-```{r}
+
+```r
 totalStepsPerDay <- tapply(data$steps, data$date, sum, na.rm = TRUE)
 ```
 
 ##### 2. Make a histogram of the total number of steps taken each day
 
-```{r}
+
+```r
 par(mfrow = c(1,1), mar = c(5.1, 4.1, 2.1, 2.1))
 hist(totalStepsPerDay, 22, xlim = c(0, 22000))
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+
 ##### 3. Calculate and report the mean and median of the total number of steps taken per day
 
-```{r}
+
+```r
 meanStepsPerDay <- mean(totalStepsPerDay, na.rm = TRUE)
 meanStepsPerDay
 ```
 
-The mean total number of steps taken per day is `r meanStepsPerDay`
+```
+## [1] 9354.23
+```
 
-```{r}
+The mean total number of steps taken per day is 9354.2295082
+
+
+```r
 medianStepsPerDay <- median(totalStepsPerDay, na.rm = TRUE)
 medianStepsPerDay
 ```
 
-The median total number of steps taken per day is `r medianStepsPerDay`
+```
+## [1] 10395
+```
+
+The median total number of steps taken per day is 10395
 
 #### What is the average daily activity pattern?
 
 ##### 1. Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
-```{r}
+
+```r
 meanStepsPerInterval <- tapply(data$steps, data$interval, mean, na.rm = TRUE)
 x <- as.integer(names(meanStepsPerInterval))
 plot(x, meanStepsPerInterval,
@@ -83,11 +95,19 @@ plot(x, meanStepsPerInterval,
      ylab = "Number of steps")
 ```
 
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
+
 ##### 2. Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
-```{r}
+
+```r
 maxIntervalIndex <- which.max(meanStepsPerInterval)
 meanStepsPerInterval[maxIntervalIndex]
+```
+
+```
+##      835 
+## 206.1698
 ```
 
 #### Imputing missing values
@@ -98,9 +118,14 @@ The presence of missing days may introduce bias into some calculations or summar
 
 ##### 1. Calculate and report the total number of missing values in the dataset (i.e. the total number of rows with NAs)
 
-```{r}
+
+```r
 totalRowsWithNAs <- sum(is.na(data))
 totalRowsWithNAs
+```
+
+```
+## [1] 2304
 ```
 
 ##### 2. Devise a strategy for filling in all of the missing values in the dataset
@@ -113,7 +138,8 @@ For example, you could use the mean/median for that day, or the mean for that 5-
 
 ##### 3. Create a new dataset that is equal to the original dataset but with the missing data filled in
 
-```{r}
+
+```r
 data_noNAs <- data
 j <- 0L
 for(i in 1:dim(data)[1]){
@@ -128,24 +154,41 @@ remove(i, j)
 
 ##### 4. Make a histogram of the total number of steps taken each day and calculate and report the mean and median total number of steps taken per day
 
-```{r}
+
+```r
 totalStepsPerDay_noNAs <- tapply(data_noNAs$steps, data_noNAs$date, sum)
 hist(totalStepsPerDay_noNAs, 22, xlim = c(0, 22000))
+```
+
+![](PA1_template_files/figure-html/unnamed-chunk-11-1.png) 
+
+```r
 meanStepsPerDay_noNAs <- mean(totalStepsPerDay_noNAs)
 meanStepsPerDay_noNAs
+```
+
+```
+## [1] 10766.19
+```
+
+```r
 medianStepsPerDay_noNAs <- median(totalStepsPerDay_noNAs)
 medianStepsPerDay_noNAs
 ```
 
+```
+## [1] 10766.19
+```
+
 ##### Do these values differ from the estimates from the first part of the assignment?
 
-The mean steps per day went from `r meanStepsPerDay` when NAs were ignored, versus `r meanStepsPerDay_noNAs` when NAs were replaced by the average-per-interval from the former analysis
+The mean steps per day went from 9354.2295082 when NAs were ignored, versus 1.0766189\times 10^{4} when NAs were replaced by the average-per-interval from the former analysis
 
-The median steps per day went from `r medianStepsPerDay` when NAs were ignored, versus `r medianStepsPerDay_noNAs` when NAs were replaced by the average-per-interval from the former analysis
+The median steps per day went from 10395 when NAs were ignored, versus 1.0766189\times 10^{4} when NAs were replaced by the average-per-interval from the former analysis
 
 ##### What is the impact of imputing missing data on the estimates of the total daily number of steps?
 
-The impact of imputing missing data, in the present circumstance, caused increases in both the mean daily number of steps (went from `r meanStepsPerDay` to `r meanStepsPerDay_noNAs`) and the median daily number of steps (went from `r medianStepsPerDay` to `r medianStepsPerDay_noNAs`)
+The impact of imputing missing data, in the present circumstance, caused increases in both the mean daily number of steps (went from 9354.2295082 to 1.0766189\times 10^{4}) and the median daily number of steps (went from 10395 to 1.0766189\times 10^{4})
 
 #### Are there differences in activity patterns between weekdays and weekends?
 
@@ -155,7 +198,8 @@ Use the dataset with the filled-in missing values for this part
 
 ##### 1. Create a new factor variable in the dataset with two levels - "weekday" and "weekend" - indicating whether a given date is a weekday or weekend day
 
-```{r}
+
+```r
 for(i in 1:dim(data_noNAs)[1]){
     if(weekdays(data_noNAs$datetime[i]) == "Saturday" | 
        weekdays(data_noNAs$datetime[i]) == "Sunday"){
@@ -176,7 +220,8 @@ remove(colNames)
 
 See the README file in the GitHub repository to see an example of what this plot should look like using simulated data
 
-```{r}
+
+```r
 library(lattice)
 meanStepsPerInterval_noNAs <- tapply(data_noNAs$steps, data_noNAs$interval, mean)
 x <- as.integer(names(meanStepsPerInterval_noNAs))
@@ -196,3 +241,5 @@ xyplot(meanStepsPerInterval_noNAs ~ x | f,
        xlab = "Interval",
        ylab = "Number of steps")
 ```
+
+![](PA1_template_files/figure-html/unnamed-chunk-13-1.png) 
